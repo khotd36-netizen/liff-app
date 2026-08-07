@@ -3,19 +3,18 @@
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>แจ้งเรื่องร้องเรียน</title>
+  <title>แจ้งเรื่องร้องเรียน</title>
 
 
-<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-<script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 </head>
@@ -24,429 +23,384 @@ content="width=device-width, initial-scale=1.0">
 <body class="bg-slate-100 min-h-screen p-4">
 
 
-<div class="max-w-md mx-auto bg-white rounded-xl shadow p-5">
+  <div class="max-w-md mx-auto bg-white rounded-xl shadow p-5">
 
 
-<h1 class="text-xl font-bold text-emerald-600 mb-4">
-แจ้งเรื่องร้องเรียน
-</h1>
+    <h1 class="text-xl font-bold text-emerald-600 mb-4">
+      แจ้งเรื่องร้องเรียน
+    </h1>
 
 
-<div class="flex items-center gap-3 mb-4">
+    <div class="flex items-center gap-3 mb-4">
 
-<img id="avatar"
-src="https://via.placeholder.com/50"
-class="w-12 h-12 rounded-full">
+      <img id="avatar" src="https://via.placeholder.com/50" class="w-12 h-12 rounded-full">
 
 
-<div>
+      <div>
 
-<div id="name">
-กำลังโหลด...
-</div>
+        <div id="name">
+          กำลังโหลด...
+        </div>
 
-</div>
+      </div>
 
-</div>
+    </div>
 
 
 
-<input
-id="title"
-class="w-full border rounded p-2 mb-3"
-placeholder="หัวข้อเรื่อง">
+    <input id="title" class="w-full border rounded p-2 mb-3" placeholder="หัวข้อเรื่อง">
 
 
-<textarea
-id="description"
-class="w-full border rounded p-2 mb-3"
-rows="4"
-placeholder="รายละเอียด">
+    <textarea id="description" class="w-full border rounded p-2 mb-3" rows="4" placeholder="รายละเอียด">
 </textarea>
 
 
 
-<input
-id="photos"
-type="file"
-multiple
-accept="image/*"
-class="mb-3">
+    <input id="photos" type="file" multiple accept="image/*" class="mb-3">
 
 
-<div
-id="preview"
-class="grid grid-cols-3 gap-2">
-</div>
+    <div id="preview" class="grid grid-cols-3 gap-2">
+    </div>
 
 
-<button
-onclick="submitComplaint()"
-id="btn"
-class="w-full bg-emerald-600 text-white p-3 rounded mt-4">
+    <button onclick="submitComplaint()" id="btn" class="w-full bg-emerald-600 text-white p-3 rounded mt-4">
 
-ส่งเรื่องร้องเรียน
+      ส่งเรื่องร้องเรียน
 
-</button>
+    </button>
 
 
-</div>
+  </div>
 
 
 
-<script>
+  <script>
 
 
-const LIFF_ID =
-"YOUR_LIFF_ID";
+    const LIFF_ID = "YOUR_LIFF_ID";
 
 
-const GAS_URL =
-"https://script.google.com/macros/s/YOUR_DEPLOY_ID/exec";
+    const GAS_URL = "https://script.google.com/macros/s/YOUR_DEPLOY_ID/exec";
 
 
 
-let profile = null;
+    let profile = null;
 
-let images = [];
+    let images = [];
 
 
 
-// -----------------------
-// INIT LIFF
-// -----------------------
+    // -----------------------
+    // INIT LIFF
+    // -----------------------
 
-async function initLIFF(){
+    async function initLIFF() {
 
 
-await liff.init({
-liffId: LIFF_ID
-});
+      await liff.init({
+        liffId: LIFF_ID
+      });
 
 
-if(!liff.isLoggedIn()){
+      if (!liff.isLoggedIn()) {
 
-liff.login();
+        liff.login();
 
-return;
+        return;
 
-}
+      }
 
 
-profile =
-await liff.getProfile();
+      profile =
+        await liff.getProfile();
 
 
 
-document
-.getElementById("name")
-.innerText =
-profile.displayName;
+      document
+        .getElementById("name")
+        .innerText =
+        profile.displayName;
 
 
-if(profile.pictureUrl){
+      if (profile.pictureUrl) {
 
-document
-.getElementById("avatar")
-.src =
-profile.pictureUrl;
+        document
+          .getElementById("avatar")
+          .src =
+          profile.pictureUrl;
 
-}
+      }
 
 
-}
+    }
 
 
 
-initLIFF();
+    initLIFF();
 
 
 
-// -----------------------
-// IMAGE
-// -----------------------
+    // -----------------------
+    // IMAGE
+    // -----------------------
 
-document
-.getElementById("photos")
-.onchange =
-async function(e){
+    document
+      .getElementById("photos")
+      .onchange =
+      async function (e) {
 
 
-images=[];
+        images = [];
 
-document
-.getElementById("preview")
-.innerHTML="";
+        document
+          .getElementById("preview")
+          .innerHTML = "";
 
 
-const files =
-Array.from(e.target.files)
-.slice(0,5);
+        const files = Array.from(e.target.files)
+            .slice(0, 5);
 
 
 
-for(const file of files){
+        for (const file of files) {
 
 
-const base64 =
-await compressImage(
-file
-);
+          const base64 = await compressImage(
+              file
+            );
 
 
-images.push(base64);
+          images.push(base64);
 
 
 
-let img =
-document.createElement("img");
+          let img = document.createElement("img");
 
 
-img.src =
-base64;
+          img.src = base64;
 
 
-img.className =
-"w-full h-20 object-cover rounded";
+          img.className = "w-full h-20 object-cover rounded";
 
 
-document
-.getElementById("preview")
-.appendChild(img);
+          document.getElementById("preview").appendChild(img);
+        }
+      };
 
+    // -----------------------
+    // Compress
+    // -----------------------
 
-}
+    function compressImage(file) {
 
 
-};
+      return new Promise(resolve => {
 
 
+        const reader = new FileReader();
 
 
-// -----------------------
-// Compress
-// -----------------------
+        reader.onload = e => {
 
-function compressImage(file){
+          const img = new Image();
 
 
-return new Promise(resolve=>{
+          img.onload = () => {
 
 
-const reader =
-new FileReader();
+            let canvas = document.createElement("canvas");
 
 
-reader.onload=e=>{
+            let width =
+              img.width;
 
 
-const img =
-new Image();
+            let height =
+              img.height;
 
 
-img.onload=()=>{
 
+            if (width > 1000) {
 
-let canvas =
-document.createElement("canvas");
+              height =
+                height * 1000 / width;
 
+              width = 1000;
 
-let width =
-img.width;
+            }
 
 
-let height =
-img.height;
+            canvas.width = width;
 
+            canvas.height = height;
 
 
-if(width>1000){
+            canvas
+              .getContext("2d")
+              .drawImage(
+                img,
+                0,
+                0,
+                width,
+                height
+              );
 
-height =
-height*1000/width;
 
-width=1000;
 
-}
+            resolve(
+              canvas.toDataURL(
+                "image/jpeg",
+                0.7
+              )
+            );
 
 
-canvas.width=width;
 
-canvas.height=height;
+          };
 
 
-canvas
-.getContext("2d")
-.drawImage(
-img,
-0,
-0,
-width,
-height
-);
+          img.src =
+            e.target.result;
 
 
+        };
 
-resolve(
-canvas.toDataURL(
-"image/jpeg",
-0.7
-)
-);
 
+        reader.readAsDataURL(file);
 
 
-};
 
+      });
 
-img.src =
-e.target.result;
 
+    }
 
-};
 
 
-reader.readAsDataURL(file);
 
+    // -----------------------
+    // Submit
+    // -----------------------
 
+    async function submitComplaint() {
 
-});
 
+      let payload = {
 
-}
 
+        userId:
+          profile.userId,
 
 
+        displayName:
+          profile.displayName,
 
-// -----------------------
-// Submit
-// -----------------------
 
-async function submitComplaint(){
+        title:
+          document
+            .getElementById("title")
+            .value,
 
 
-let payload={
+        description:
+          document
+            .getElementById("description")
+            .value,
 
 
-userId:
-profile.userId,
+        photos:
+          images
 
 
-displayName:
-profile.displayName,
+      };
 
 
-title:
-document
-.getElementById("title")
-.value,
 
+      Swal.fire({
 
-description:
-document
-.getElementById("description")
-.value,
+        title: "กำลังส่งข้อมูล",
 
+        allowOutsideClick: false,
 
-photos:
-images
+        didOpen() {
+          Swal.showLoading();
+        }
 
+      });
 
-};
 
 
+      try {
 
-Swal.fire({
 
-title:"กำลังส่งข้อมูล",
+        let res =
+          await fetch(
+            GAS_URL,
+            {
 
-allowOutsideClick:false,
+              method: "POST",
 
-didOpen(){
-Swal.showLoading();
-}
+              headers: {
+                "Content-Type":
+                  "text/plain;charset=utf-8"
+              },
 
-});
+              body:
+                JSON.stringify(payload)
 
+            }
+          );
 
 
-try{
 
+        let result =
+          await res.json();
 
-let res =
-await fetch(
-GAS_URL,
-{
 
-method:"POST",
 
-headers:{
-"Content-Type":
-"text/plain;charset=utf-8"
-},
+        if (result.success) {
 
-body:
-JSON.stringify(payload)
 
-}
-);
+          Swal.fire(
+            "สำเร็จ",
+            "ส่งเรื่องร้องเรียนแล้ว",
+            "success"
+          );
 
 
+          if (liff.isInClient()) {
 
-let result =
-await res.json();
+            liff.closeWindow();
 
+          }
 
 
-if(result.success){
+        } else {
 
 
-Swal.fire(
-"สำเร็จ",
-"ส่งเรื่องร้องเรียนแล้ว",
-"success"
-);
+          throw result.error;
 
 
-if(liff.isInClient()){
+        }
 
-liff.closeWindow();
 
-}
 
+      }
+      catch (err) {
 
-}else{
 
+        Swal.fire(
+          "Error",
+          err.toString(),
+          "error"
+        );
 
-throw result.error;
 
-
-}
-
-
-
-}
-catch(err){
-
-
-Swal.fire(
-"Error",
-err.toString(),
-"error"
-);
-
-
-}
-
-
-
-}
-
-
-
-</script>
+      }
+    }
+  </script>
 
 
 </body>
 
-</html>Ï
+</html>
