@@ -1,406 +1,384 @@
 <!DOCTYPE html>
 <html lang="th">
-
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta charset="UTF-8">
+<title>แจ้งร้องเรียน</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-  <title>แจ้งเรื่องร้องเรียน</title>
+<style>
+body{
+  font-family:sans-serif;
+  padding:20px;
+  background:#f5f5f5;
+}
 
+.box{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+}
 
-  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+.profile{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#eafff0;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:15px;
+}
 
-  <script src="https://cdn.tailwindcss.com"></script>
+.profile img{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+}
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+input,textarea,button{
+  width:100%;
+  margin-top:10px;
+  padding:12px;
+  box-sizing:border-box;
+}
 
+button{
+  background:#06c755;
+  color:white;
+  border:0;
+  border-radius:8px;
+}
+</style>
 
 </head>
 
 
-<body class="bg-slate-100 min-h-screen p-4">
+<body>
 
 
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow p-5">
+<div class="box">
 
 
-    <h1 class="text-xl font-bold text-emerald-600 mb-4">
-      แจ้งเรื่องร้องเรียน
-    </h1>
+<h2>
+แจ้งร้องเรียน
+</h2>
 
 
-    <div class="flex items-center gap-3 mb-4">
+<div class="profile">
 
-      <img id="avatar" src="https://via.placeholder.com/50" class="w-12 h-12 rounded-full">
-
-
-      <div>
-
-        <div id="name">
-          กำลังโหลด...
-        </div>
-
-      </div>
-
-    </div>
+<img id="avatar"
+src="https://via.placeholder.com/50">
 
 
+<div>
 
-    <input id="title" class="w-full border rounded p-2 mb-3" placeholder="หัวข้อเรื่อง">
+<div>
+ผู้แจ้ง
+</div>
+
+<b id="lineName">
+กำลังโหลด...
+</b>
+
+</div>
 
 
-    <textarea id="description" class="w-full border rounded p-2 mb-3" rows="4" placeholder="รายละเอียด">
+</div>
+
+
+
+<input 
+id="title"
+placeholder="หัวข้อ">
+
+
+<textarea
+id="detail"
+rows="5"
+placeholder="รายละเอียด">
 </textarea>
 
 
 
-    <input id="photos" type="file" multiple accept="image/*" class="mb-3">
+<button onclick="sendComplaint()">
+ส่งเรื่อง
+</button>
 
 
-    <div id="preview" class="grid grid-cols-3 gap-2">
-    </div>
+</div>
 
 
-    <button onclick="submitComplaint()" id="btn" class="w-full bg-emerald-600 text-white p-3 rounded mt-4">
 
-      ส่งเรื่องร้องเรียน
 
-    </button>
+<script>
 
 
-  </div>
+const LIFF_ID =
+"ใส่_LIFF_ID";
 
 
+let profile = null;
 
-  <script>
 
 
-    const LIFF_ID = "2011006745-QAJUfcJB";
+async function initLIFF(){
 
 
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbx-d-NoGP4pjGsBtmyKlm5phX9oTz06mu-YyCLdATf_hKEolLda4A5Q-tqLDAqrOS7Ybg/exec";
+await liff.init({
 
+liffId:LIFF_ID
 
+});
 
-    let profile = null;
 
-    let images = [];
 
+if(!liff.isLoggedIn()){
 
+liff.login();
 
-    // -----------------------
-    // INIT LIFF
-    // -----------------------
+return;
 
-    async function initLIFF() {
+}
 
 
-      await liff.init({
-        liffId: LIFF_ID
-      });
 
+profile =
+await liff.getProfile();
 
-      if (!liff.isLoggedIn()) {
 
-        liff.login();
 
-        return;
+console.log(profile);
 
-      }
 
 
-      profile =
-        await liff.getProfile();
+// แสดงชื่อ
 
+document.getElementById(
+"lineName"
+).innerText =
+profile.displayName;
 
 
-      document
-        .getElementById("name")
-        .innerText =
-        profile.displayName;
 
+// แสดงรูป
 
-      if (profile.pictureUrl) {
+if(profile.pictureUrl){
 
-        document
-          .getElementById("avatar")
-          .src =
-          profile.pictureUrl;
+document.getElementById(
+"avatar"
+).src =
+profile.pictureUrl;
 
-      }
+}
 
 
-    }
+}
 
 
 
-    initLIFF();
+async function sendComplaint(){
 
 
+if(!profile){
 
-    // -----------------------
-    // IMAGE
-    // -----------------------
+alert(
+"ยังไม่ได้ Login LINE"
+);
 
-    document
-      .getElementById("photos")
-      .onchange =
-      async function (e) {
+return;
 
+}
 
-        images = [];
 
-        document
-          .getElementById("preview")
-          .innerHTML = "";
 
+const title =
+document.getElementById(
+"title"
+).value;
 
-        const files = Array.from(e.target.files)
-            .slice(0, 5);
 
 
+const detail =
+document.getElementById(
+"detail"
+).value;
 
-        for (const file of files) {
 
 
-          const base64 = await compressImage(
-              file
-            );
 
+await liff.sendMessages([
 
-          images.push(base64);
+{
 
+type:"flex",
 
+altText:
+"แจ้งร้องเรียน",
 
-          let img = document.createElement("img");
 
+contents:{
 
-          img.src = base64;
 
+type:"bubble",
 
-          img.className = "w-full h-20 object-cover rounded";
 
 
-          document.getElementById("preview").appendChild(img);
-        }
-      };
+header:{
 
-    // -----------------------
-    // Compress
-    // -----------------------
+type:"box",
 
-    function compressImage(file) {
+layout:"vertical",
 
+contents:[
 
-      return new Promise(resolve => {
+{
 
+type:"text",
 
-        const reader = new FileReader();
+text:"แจ้งร้องเรียน",
 
+weight:"bold",
 
-        reader.onload = e => {
+color:"#ffffff"
 
-          const img = new Image();
+}
 
+],
 
-          img.onload = () => {
+backgroundColor:"#06C755"
 
+},
 
-            let canvas = document.createElement("canvas");
 
 
-            let width =
-              img.width;
+body:{
 
+type:"box",
 
-            let height =
-              img.height;
+layout:"vertical",
 
+contents:[
 
 
-            if (width > 1000) {
 
-              height =
-                height * 1000 / width;
+// รูป LINE
 
-              width = 1000;
+{
 
-            }
+type:"image",
 
+url:
+profile.pictureUrl,
 
-            canvas.width = width;
+size:"md",
 
-            canvas.height = height;
+aspectMode:"cover",
 
+aspectRatio:"1:1",
 
-            canvas
-              .getContext("2d")
-              .drawImage(
-                img,
-                0,
-                0,
-                width,
-                height
-              );
+align:"center"
 
+},
 
 
-            resolve(
-              canvas.toDataURL(
-                "image/jpeg",
-                0.7
-              )
-            );
 
+{
 
+type:"text",
 
-          };
+text:
+profile.displayName,
 
+weight:"bold",
 
-          img.src =
-            e.target.result;
+size:"lg",
 
+align:"center",
 
-        };
+margin:"md"
 
+},
 
-        reader.readAsDataURL(file);
 
 
+{
 
-      });
+type:"separator",
 
+margin:"lg"
 
-    }
+},
 
 
 
+{
 
-    // -----------------------
-    // Submit
-    // -----------------------
+type:"text",
 
-    async function submitComplaint() {
+text:title,
 
+weight:"bold",
 
-      let payload = {
+size:"lg",
 
+wrap:true,
 
-        userId:
-          profile.userId,
+margin:"lg"
 
+},
 
-        displayName:
-          profile.displayName,
 
 
-        title:
-          document
-            .getElementById("title")
-            .value,
+{
 
+type:"text",
 
-        description:
-          document
-            .getElementById("description")
-            .value,
+text:detail,
 
+wrap:true,
 
-        photos:
-          images
+margin:"md"
 
+}
 
-      };
 
 
+]
 
-      Swal.fire({
+}
 
-        title: "กำลังส่งข้อมูล",
 
-        allowOutsideClick: false,
+}
 
-        didOpen() {
-          Swal.showLoading();
-        }
 
-      });
+}
 
+]);
 
 
-      try {
 
+alert(
+"ส่งเรียบร้อย"
+);
 
-        let res =
-          await fetch(
-            GAS_URL,
-            {
 
-              method: "POST",
 
-              headers: {
-                "Content-Type":
-                  "text/plain;charset=utf-8"
-              },
+liff.closeWindow();
 
-              body:
-                JSON.stringify(payload)
 
-            }
-          );
 
+}
 
 
-        let result =
-          await res.json();
 
+initLIFF();
 
 
-        if (result.success) {
 
-
-          Swal.fire(
-            "สำเร็จ",
-            "ส่งเรื่องร้องเรียนแล้ว",
-            "success"
-          );
-
-
-          if (liff.isInClient()) {
-
-            liff.closeWindow();
-
-          }
-
-
-        } else {
-
-
-          throw result.error;
-
-
-        }
-
-
-
-      }
-      catch (err) {
-
-
-        Swal.fire(
-          "Error",
-          err.toString(),
-          "error"
-        );
-
-
-      }
-    }
-  </script>
+</script>
 
 
 </body>
-
 </html>
