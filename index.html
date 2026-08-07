@@ -74,132 +74,145 @@
   </div>
 
   <script>
-    // Config ค่าจากระบบของคุณ
-    const LIFF_ID = "2011006745-Bhpi5J7X"; // LIFF ID ของคุณ
-    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwqoW7c9d924C24P0330L5dZ5_S-66f81xR5B0N_O3R-9gYQz7-ZgI1_M30Jg1/exec"; // วาง Web App URL ตัวใหม่ของคุณที่นี่
+  // Config ค่าจากระบบของคุณ
+  const LIFF_ID = "2011006745-Bhpi5J7X";
+  const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwqoW7c9d924C24P0330L5dZ5_S-66f81xR5B0N_O3R-9gYQz7-ZgI1_M30Jg1/exec";
 
-    let processedBase64Images = [];
+  let processedBase64Images = [];
 
-    // Initialize LIFF
-    window.onload = function() {
-      liff.init({ liffId: LIFF_ID })
-        .then(() => {
-          if (!liff.isLoggedIn()) {
-            liff.login();
-          } else {
-            liff.getProfile().then(profile => {
-              document.getElementById('userId').value = profile.userId;
-              document.getElementById('displayName').value = profile.displayName;
-              document.getElementById('profileName').innerText = profile.displayName;
-              
-              if (profile.pictureUrl) {
-                document.getElementById('userAvatar').src = profile.pictureUrl;
-              }
-              document.getElementById('submitBtn').disabled = false;
-            }).catch(err => {
-              console.error("Profile Error:", err);
-              document.getElementById('profileName').innerText = "ผู้ใช้งานทั่วไป";
-              document.getElementById('submitBtn').disabled = false;
-            });
-          }
-        })
-        .catch(err => {
-          console.error("LIFF Init Error:", err);
-          alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับ LINE: " + err.message);
+  window.onload = function() {
+    liff.init({ liffId: LIFF_ID })
+      .then(() => {
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        } else {
+          liff.getProfile().then(profile => {
+            document.getElementById('userId').value = profile.userId;
+            document.getElementById('displayName').value = profile.displayName;
+            document.getElementById('profileName').innerText = profile.displayName;
+            
+            if (profile.pictureUrl) {
+              document.getElementById('userAvatar').src = profile.pictureUrl;
+            }
+            document.getElementById('submitBtn').disabled = false;
+          }).catch(err => {
+            console.error("Profile Error:", err);
+            document.getElementById('profileName').innerText = "ผู้ใช้งานทั่วไป";
+            document.getElementById('submitBtn').disabled = false;
+          });
+        }
+      })
+      .catch(err => {
+        console.error("LIFF Init Error:", err);
+        Swal.fire({
+          icon: 'error',
+          title: 'LIFF Init Error',
+          text: err.message || JSON.stringify(err)
         });
+      });
+  };
+
+  async function handleImagePreview(event) {
+    const files = Array.from(event.target.files).slice(0, 5);
+    const previewGrid = document.getElementById('previewGrid');
+    previewGrid.innerHTML = '';
+    processedBase64Images = [];
+
+    for (const file of files) {
+      const base64 = await resizeAndCompressImage(file, 800, 0.7);
+      processedBase64Images.push(base64);
+
+      const img = document.createElement('img');
+      img.src = base64;
+      img.className = 'w-full h-20 object-cover rounded-lg border border-slate-200 shadow-sm';
+      previewGrid.appendChild(img);
+    }
+  }
+
+  function resizeAndCompressImage(file, maxWidth, quality) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+      };
+    });
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = true;
+    submitBtn.innerText = "กำลังบันทึกข้อมูล...";
+
+    Swal.fire({
+      title: 'กำลังส่งเรื่องร้องเรียน...',
+      text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลและรูปภาพ',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    const userId = document.getElementById('userId').value;
+    const displayName = document.getElementById('displayName').value;
+
+    const payload = {
+      userId: userId,
+      displayName: displayName,
+      title: title,
+      description: description,
+      photoDataList: JSON.stringify(processedBase64Images)
     };
 
-    // ฟังก์ชันย่อขนาดรูปภาพและแปลงเป็น Base64
-    async function handleImagePreview(event) {
-      const files = Array.from(event.target.files).slice(0, 5); // จำกัดไม่เกิน 5 รูป
-      const previewGrid = document.getElementById('previewGrid');
-      previewGrid.innerHTML = '';
-      processedBase64Images = [];
+    try {
+      // 1. ตรวจสอบการยิง fetch พร้อมดักอ่าน Response และ HTTP Status
+      const response = await fetch(GAS_WEB_APP_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain'
+        },
+        body: JSON.stringify(payload)
+      });
 
-      for (const file of files) {
-        const base64 = await resizeAndCompressImage(file, 800, 0.7);
-        processedBase64Images.push(base64);
-
-        const img = document.createElement('img');
-        img.src = base64;
-        img.className = 'w-full h-20 object-cover rounded-lg border border-slate-200 shadow-sm';
-        previewGrid.appendChild(img);
+      if (!response.ok) {
+        throw new Error(`HTTP Error Status: ${response.status} (${response.statusText})`);
       }
-    }
 
-    function resizeAndCompressImage(file, maxWidth, quality) {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          const img = new Image();
-          img.src = e.target.result;
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            let width = img.width;
-            let height = img.height;
-
-            if (width > maxWidth) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
-            }
-
-            canvas.width = width;
-            canvas.height = height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', quality));
-          };
-        };
-      });
-    }
-
-    // ฟังก์ชัน Submit Form
-    async function handleSubmit(e) {
-      e.preventDefault();
-      
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = "กำลังบันทึกข้อมูล...";
-
-      Swal.fire({
-        title: 'กำลังส่งเรื่องร้องเรียน...',
-        text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลและรูปภาพ',
-        allowOutsideClick: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
-      });
-
-      const title = document.getElementById('title').value;
-      const description = document.getElementById('description').value;
-      const userId = document.getElementById('userId').value;
-      const displayName = document.getElementById('displayName').value;
-
-      const payload = {
-        userId: userId,
-        displayName: displayName,
-        title: title,
-        description: description,
-        photoDataList: JSON.stringify(processedBase64Images)
-      };
+      // ดึง Raw Text ออกมาก่อนป้องกันกรณี GAS ตอบกลับเป็น HTML Error Page
+      const rawText = await response.text();
+      let result;
 
       try {
-        // ส่งข้อมูลไปที่ Google Apps Script ผ่าน POST
-        const response = await fetch(GAS_WEB_APP_URL, {
-          method: 'POST',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-          },
-          body: JSON.stringify(payload)
-        });
+        result = JSON.parse(rawText);
+      } catch (jsonErr) {
+        throw new Error(`Invalid JSON Response from GAS:\n${rawText.substring(0, 300)}...`);
+      }
 
-        const result = await response.json();
-
-        if (result.success) {
-          // หากรันใน LINE App ให้ส่ง Flex Message
-          if (liff.isInClient()) {
+      if (result.success) {
+        let flexError = null;
+        if (liff.isInClient()) {
+          try {
             await liff.sendMessages([{
               type: 'flex',
               altText: 'ได้รับเรื่องร้องเรียน: ' + title,
@@ -222,37 +235,57 @@
                 }
               }
             }]);
+          } catch (err) {
+            flexError = err.message || JSON.stringify(err);
+            console.error("Flex Message Error:", err);
           }
-
-          Swal.fire({
-            icon: 'success',
-            title: 'ส่งเรื่องร้องเรียนสำเร็จ!',
-            text: 'ระบบได้บันทึกเรื่องร้องเรียนของท่านเรียบร้อยแล้ว',
-            confirmButtonColor: '#059669'
-          }).then(() => {
-            if (liff.isInClient()) {
-              liff.closeWindow();
-            } else {
-              location.reload();
-            }
-          });
-
-        } else {
-          throw new Error(result.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
         }
 
-      } catch (error) {
-        console.error("Submit Error:", error);
         Swal.fire({
-          icon: 'error',
-          title: 'เกิดข้อผิดพลาด',
-          text: error.message,
-          confirmButtonColor: '#DC2626'
+          icon: flexError ? 'warning' : 'success',
+          title: 'ส่งเรื่องร้องเรียนสำเร็จ!',
+          html: flexError 
+            ? `บันทึกข้อมูลแล้ว แต่ส่ง Flex Message ไม่ผ่าน:<br><span class="text-xs text-red-500">${flexError}</span>`
+            : 'ระบบได้บันทึกเรื่องร้องเรียนของท่านเรียบร้อยแล้ว',
+          confirmButtonColor: '#059669'
+        }).then(() => {
+          if (liff.isInClient()) {
+            liff.closeWindow();
+          } else {
+            location.reload();
+          }
         });
-        submitBtn.disabled = false;
-        submitBtn.innerText = "ส่งเรื่องร้องเรียน";
+
+      } else {
+        throw new Error(`GAS Logic Error: ${result.error || 'Unknown Backend Error'}`);
       }
+
+    } catch (error) {
+      console.error("Detailed Submit Error:", error);
+
+      // สร้างข้อความ Error แบบละเอียดสำหรับแสดงผล
+      let detailedDetail = "";
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        detailedDetail = "สาเหตุที่เป็นไปได้:\n1. GAS Web App ไม่ได้ตั้งค่าเป็น 'Anyone'\n2. URL ของ GAS ผิด หรือไม่ได้ทำการ Deploy New Version\n3. ติด CORS/Preflight Policy";
+      }
+
+      Swal.fire({
+        icon: 'error',
+        title: 'เกิดข้อผิดพลาดในการส่งข้อมูล',
+        html: `
+          <div class="text-left text-xs bg-slate-100 p-3 rounded-lg overflow-x-auto border border-slate-300 font-mono">
+            <strong>Error Name:</strong> ${error.name}<br>
+            <strong>Message:</strong> ${error.message}<br>
+            ${detailedDetail ? `<br><strong class="text-red-600">Tip:</strong><br>${detailedDetail}` : ''}
+          </div>
+        `,
+        confirmButtonColor: '#DC2626'
+      });
+
+      submitBtn.disabled = false;
+      submitBtn.innerText = "ส่งเรื่องร้องเรียน";
     }
-  </script>
+  }
+</script>
 </body>
 </html>
