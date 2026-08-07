@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ระบบแจ้งเรื่องร้องเรียน</title>
+  <!-- LIFF SDK -->
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 flex justify-center items-center">
+
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 my-4">
+    <!-- Header -->
+    <div class="text-center mb-6">
+      <h1 class="text-2xl font-bold text-emerald-600 mb-1">แจ้งเรื่องร้องเรียน</h1>
+      <p class="text-slate-500 text-sm">กรอกข้อมูลรายละเอียดเพื่อแจ้งเรื่องร้องเรียน</p>
+    </div>
+
+    <!-- User Profile Box -->
+    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-3 mb-5 flex items-center gap-3">
+      <img id="userAvatar" src="https://via.placeholder.com/48" class="w-12 h-12 rounded-full object-cover border border-emerald-200" alt="Avatar">
+      <div>
+        <div class="text-xs text-emerald-700 font-medium">ผู้แจ้งเรื่อง (บัญชี LINE):</div>
+        <div id="profileName" class="text-sm font-semibold text-slate-800">กำลังโหลดข้อมูลผู้ใช้...</div>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form id="complaintForm" onsubmit="handleSubmit(event)" class="space-y-4">
+      <!-- Hidden Profile Inputs -->
+      <input type="hidden" id="userId" name="userId">
+      <input type="hidden" id="displayName" name="displayName">
+
+      <!-- หัวข้อเรื่อง -->
+      <div>
+        <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">หัวข้อเรื่อง <span class="text-red-500">*</span></label>
+        <input type="text" id="title" name="title" required placeholder="เช่น ท่อประปาแตก, ไฟทางดับ"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm">
+      </div>
+
+      <!-- รายละเอียด -->
+      <div>
+        <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">รายละเอียด <span class="text-red-500">*</span></label>
+        <textarea id="description" name="description" rows="4" required placeholder="ระบุรายละเอียดสถานที่และข้อมูลเพิ่มเติม"
+          class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm resize-none"></textarea>
+      </div>
+
+      <!-- แนบรูปภาพ -->
+      <div>
+        <label for="photos" class="block text-sm font-semibold text-slate-700 mb-1">แนบรูปภาพประกอบ (เลือกได้หลายรูป)</label>
+        <input type="file" id="photos" name="photos" accept="image/*" multiple onchange="handleImagePreview(event)"
+          class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer">
+        <p class="text-xs text-slate-400 mt-1">* สามารถแนบได้สูงสุด 5 รูป</p>
+        
+        <!-- Image Preview Grid -->
+        <div id="previewGrid" class="grid grid-cols-3 gap-2 mt-3"></div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" id="submitBtn" disabled
+        class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold rounded-xl shadow-md transition duration-200 text-sm mt-2">
+        ส่งเรื่องร้องเรียน
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Config ค่าจากระบบของคุณ
+    const LIFF_ID = "2011006745-Bhpi5J7X"; // LIFF ID ของคุณ
+    const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwqoW7c9d924C24P0330L5dZ5_S-66f81xR5B0N_O3R-9gYQz7-ZgI1_M30Jg1/exec"; // วาง Web App URL ตัวใหม่ของคุณที่นี่
+
+    let processedBase64Images = [];
+
+    // Initialize LIFF
+    window.onload = function() {
+      liff.init({ liffId: LIFF_ID })
+        .then(() => {
+          if (!liff.isLoggedIn()) {
+            liff.login();
+          } else {
+            liff.getProfile().then(profile => {
+              document.getElementById('userId').value = profile.userId;
+              document.getElementById('displayName').value = profile.displayName;
+              document.getElementById('profileName').innerText = profile.displayName;
+              
+              if (profile.pictureUrl) {
+                document.getElementById('userAvatar').src = profile.pictureUrl;
+              }
+              document.getElementById('submitBtn').disabled = false;
+            }).catch(err => {
+              console.error("Profile Error:", err);
+              document.getElementById('profileName').innerText = "ผู้ใช้งานทั่วไป";
+              document.getElementById('submitBtn').disabled = false;
+            });
+          }
+        })
+        .catch(err => {
+          console.error("LIFF Init Error:", err);
+          alert("เกิดข้อผิดพลาดในการเชื่อมต่อกับ LINE: " + err.message);
+        });
+    };
+
+    // ฟังก์ชันย่อขนาดรูปภาพและแปลงเป็น Base64
+    async function handleImagePreview(event) {
+      const files = Array.from(event.target.files).slice(0, 5); // จำกัดไม่เกิน 5 รูป
+      const previewGrid = document.getElementById('previewGrid');
+      previewGrid.innerHTML = '';
+      processedBase64Images = [];
+
+      for (const file of files) {
+        const base64 = await resizeAndCompressImage(file, 800, 0.7);
+        processedBase64Images.push(base64);
+
+        const img = document.createElement('img');
+        img.src = base64;
+        img.className = 'w-full h-20 object-cover rounded-lg border border-slate-200 shadow-sm';
+        previewGrid.appendChild(img);
+      }
+    }
+
+    function resizeAndCompressImage(file, maxWidth, quality) {
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+
+            if (width > maxWidth) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+        };
+      });
+    }
+
+    // ฟังก์ชัน Submit Form
+    async function handleSubmit(e) {
+      e.preventDefault();
+      
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "กำลังบันทึกข้อมูล...";
+
+      Swal.fire({
+        title: 'กำลังส่งเรื่องร้องเรียน...',
+        text: 'กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลและรูปภาพ',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const userId = document.getElementById('userId').value;
+      const displayName = document.getElementById('displayName').value;
+
+      const payload = {
+        userId: userId,
+        displayName: displayName,
+        title: title,
+        description: description,
+        photoDataList: JSON.stringify(processedBase64Images)
+      };
+
+      try {
+        // ส่งข้อมูลไปที่ Google Apps Script ผ่าน POST
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // หากรันใน LINE App ให้ส่ง Flex Message
+          if (liff.isInClient()) {
+            await liff.sendMessages([{
+              type: 'flex',
+              altText: 'ได้รับเรื่องร้องเรียน: ' + title,
+              contents: {
+                type: 'bubble',
+                header: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [{ type: 'text', text: 'ได้รับเรื่องร้องเรียนแล้ว', weight: 'bold', color: '#FFFFFF', size: 'md' }],
+                  backgroundColor: '#059669'
+                },
+                body: {
+                  type: 'box',
+                  layout: 'vertical',
+                  contents: [
+                    { type: 'text', text: title, weight: 'bold', size: 'lg', wrap: true },
+                    { type: 'text', text: 'รายละเอียด: ' + description, wrap: true, color: '#475569', size: 'sm', margin: 'md' },
+                    { type: 'text', text: 'สถานะ: รอดำเนินการ', size: 'xs', color: '#D97706', margin: 'lg', weight: 'bold' }
+                  ]
+                }
+              }
+            }]);
+          }
+
+          Swal.fire({
+            icon: 'success',
+            title: 'ส่งเรื่องร้องเรียนสำเร็จ!',
+            text: 'ระบบได้บันทึกเรื่องร้องเรียนของท่านเรียบร้อยแล้ว',
+            confirmButtonColor: '#059669'
+          }).then(() => {
+            if (liff.isInClient()) {
+              liff.closeWindow();
+            } else {
+              location.reload();
+            }
+          });
+
+        } else {
+          throw new Error(result.error || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        }
+
+      } catch (error) {
+        console.error("Submit Error:", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'เกิดข้อผิดพลาด',
+          text: error.message,
+          confirmButtonColor: '#DC2626'
+        });
+        submitBtn.disabled = false;
+        submitBtn.innerText = "ส่งเรื่องร้องเรียน";
+      }
+    }
+  </script>
+</body>
+</html>
