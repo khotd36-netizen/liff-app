@@ -87,11 +87,22 @@ src="https://via.placeholder.com/50">
 
 </div>
 
+  
 
 
 <input 
 id="title"
 placeholder="หัวข้อ">
+<input 
+id="location"
+placeholder="สถานที่">
+
+<div>
+เวลาที่พบปัญหา
+</div>
+<input 
+type="datetime-local"
+id="timemeet">
 
 
 <textarea
@@ -197,6 +208,18 @@ const title =
 document.getElementById(
 "title"
 ).value;
+  
+const location =
+document.getElementById(
+"location"
+).value;
+  
+const timemeet =
+document.getElementById(
+"timemeet"
+).value;
+
+  
 
 
 
@@ -332,13 +355,35 @@ margin:"lg"
 
 },
 
+{
 
+type:"text",
+
+text"สถานที่ : "+location,
+
+wrap:true,
+
+margin:"md"
+
+},
 
 {
 
 type:"text",
 
-text:detail,
+text:"เวลาที่พบ : "+timemeet,
+
+wrap:true,
+
+margin:"md"
+
+},
+
+{
+
+type:"text",
+
+text:"รายละเอียด : "+detail,
 
 wrap:true,
 
