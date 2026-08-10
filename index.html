@@ -285,115 +285,55 @@ type:"box",
 
 layout:"vertical",
 
-contents:[
-
-
-
-// รูป LINE
-
-{
-
-type:"image",
-
-url:
-profile.pictureUrl,
-
-size:"md",
-
-aspectMode:"cover",
-
-aspectRatio:"1:1",
-
-align:"center"
-
-},
-
-
-
-{
-
-type:"text",
-
-text:
-profile.displayName,
-
-weight:"bold",
-
-size:"lg",
-
-align:"center",
-
-margin:"md"
-
-},
-
-
-
-{
-
-type:"separator",
-
-margin:"lg"
-
-},
-
-
-
-{
-
-type:"text",
-
-text:title,
-
-weight:"bold",
-
-size:"lg",
-
-wrap:true,
-
-margin:"lg"
-
-},
-
-{
-
-type:"text",
-
-text"สถานที่ : "+location,
-
-wrap:true,
-
-margin:"md"
-
-},
-
-{
-
-type:"text",
-
-text:"เวลาที่พบ : "+timemeet,
-
-wrap:true,
-
-margin:"md"
-
-},
-
-{
-
-type:"text",
-
-text:"รายละเอียด : "+detail,
-
-wrap:true,
-
-margin:"md"
-
-}
-
-
-
-]
+contents: [
+          // รูป LINE
+          {
+            type: "image",
+            url: profile.pictureUrl,
+            size: "md",
+            aspectMode: "cover",
+            aspectRatio: "1:1",
+            align: "center"
+          },
+          {
+            type: "text",
+            text: profile.displayName,
+            weight: "bold",
+            size: "lg",
+            align: "center",
+            margin: "md"
+          },
+          {
+            type: "separator",
+            margin: "lg"
+          },
+          {
+            type: "text",
+            text: title,
+            weight: "bold",
+            size: "lg",
+            wrap: true,
+            margin: "lg"
+          },
+          {
+            type: "text",
+            text: `สถานที่ : ${location}`,
+            wrap: true,
+            margin: "md"
+          },
+          {
+            type: "text",
+            text: `เวลาที่พบ : ${timemeet}`,
+            wrap: true,
+            margin: "md"
+          },
+          {
+            type: "text",
+            text: `รายละเอียด : ${detail}`,
+            wrap: true,
+            margin: "md"
+          }
+        ]
 
 }
 
