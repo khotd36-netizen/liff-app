@@ -95,11 +95,13 @@ placeholder="หัวข้อ">
 <input 
 id="location"
 placeholder="สถานที่">
+<label>
+<span>วันเวลาที่พบ</span>
 <input 
 id="meet-time"
   type="datetime-local"
 placeholder="วันเวลาที่พบ">
-
+</label>
 
 <textarea
 id="detail"
@@ -120,15 +122,6 @@ placeholder="รายละเอียด">
 
 
 <script>
-
-  window.addEventListener('load', () => {
-    const now = new Date();
-    // บังคับให้เป็นเวลาประเทศไทย (GMT+7) โดยตรง
-    const tzOffset = 7 * 60; // 7 ชั่วโมง แปลงเป็นนาที
-    const thTime = new Date(now.getTime() + (tzOffset + now.getTimezoneOffset()) * 60000);
-    // แสดงผลในรูปแบบ YYYY-MM-DDTHH:MM
-    document.getElementById('meet-time').value = thTime.toISOString().slice(0, 16);
-  });
 
 
 const LIFF_ID =
