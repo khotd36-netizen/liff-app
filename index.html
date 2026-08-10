@@ -38,10 +38,21 @@ body {
 }
 
 input, textarea, button {
+  display: block;             
   width: 100%;
   margin-top: 10px;
   padding: 12px;
-  box-sizing: border-box;
+  box-sizing: border-box;     
+  -webkit-appearance: none;   
+  border: 1px solid #ccc;     
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+input[type="datetime-local"] {
+  min-height: 45px;           
+  background-color: #ffffff;
 }
 
 button {
