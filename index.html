@@ -62,6 +62,42 @@ button {
   border-radius: 8px;
   font-weight: bold;
   cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+}
+
+/* สไตล์ปุ่มเมื่อโดนปิดการใช้งาน (Disabled) */
+button:disabled {
+  background: #ccc !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); display: none;
+  justify-content: center; align-items: center; z-index: 99999;
+}
+.modal-card {
+  background: #fff; padding: 24px 20px; border-radius: 16px;
+  text-align: center; width: 85%; max-width: 300px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.modal-icon {
+  width: 50px; height: 50px; border-radius: 50%; font-size: 26px;
+  font-weight: bold; display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 12px;
+}
+/* สไตล์ Success */
+.modal-icon.Success { background: #e8f5e9; color: #2e7d32; }
+.modal-btn.Success { background: #06c755; }
+/* สไตล์ Error */
+.modal-icon.Error { background: #ffebee; color: #c62828; }
+.modal-btn.Error { background: #d32f2f; }
+
+.modal-message { font-size: 16px; color: #333; margin: 0 0 20px; font-weight: 500; }
+.modal-btn {
+  width: 100%; padding: 12px; color: #fff; border: none;
+  border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
 }
 </style>
 </head>
@@ -87,7 +123,16 @@ button {
 
   <textarea id="detail" rows="5" placeholder="รายละเอียด"></textarea>
 
-  <button onclick="sendComplaint()">ส่งเรื่อง</button>
+  <!-- ปิดการใช้งานปุ่มเริ่มต้นไว้ก่อน -->
+  <button id="submitBtn" onclick="sendComplaint()" disabled>กำลังโหลดข้อมูล...</button>
+</div>
+
+<div id="customModal" class="modal-overlay">
+  <div class="modal-card">
+    <div id="modalIcon" class="modal-icon">✓</div>
+    <p id="modalMessage" class="modal-message"></p>
+    <button id="modalBtn" class="modal-btn">ตกลง</button>
+  </div>
 </div>
 
 <script>
@@ -95,6 +140,8 @@ const LIFF_ID = "2011006745-pUOxZszu"; // เปลี่ยนเป็น LIFF
 let profile = null;
 
 async function initLIFF() {
+  const submitBtn = document.getElementById("submitBtn");
+  
   try {
     await liff.init({ liffId: LIFF_ID });
 
@@ -113,15 +160,22 @@ async function initLIFF() {
     const defaultAvatar = "https://via.placeholder.com/50";
     document.getElementById("avatar").src = profile.pictureUrl || defaultAvatar;
 
+    // เปิดใช้งานปุ่มเมื่อโหลด Profile เสร็จเรียบร้อย
+    submitBtn.disabled = false;
+    submitBtn.innerText = "ส่งเรื่อง";
+
   } catch (error) {
     console.error("LIFF Initialization failed:", error);
     document.getElementById("lineName").innerText = "โหลดข้อมูลไม่สำเร็จ";
+    submitBtn.innerText = "เกิดข้อผิดพลาดในการโหลด";
   }
 }
 
 async function sendComplaint() {
+  const submitBtn = document.getElementById("submitBtn");
+
   if (!profile) {
-    alert("ยังไม่ได้ Login LINE หรือข้อมูลโปรไฟล์ยังโหลดไม่เสร็จ");
+    showModal("Error", "ยังไม่ได้ Login LINE หรือข้อมูลโปรไฟล์ยังโหลดไม่เสร็จ");
     return;
   }
 
@@ -131,9 +185,13 @@ async function sendComplaint() {
   const detail = document.getElementById("detail").value.trim();
 
   if (!title || !location || !detail) {
-    alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    showModal("Error", "กรุณากรอกข้อมูลให้ครบถ้วน");
     return;
   }
+
+  // ล็อคปุ่มทันทีเมื่อกดส่ง ป้องกันการกดซ้ำ
+  submitBtn.disabled = true;
+  submitBtn.innerText = "กำลังส่งข้อมูล...";
 
   // รูปภาพสำหรับ Flex Message (ต้องเป็น https และไม่เป็นค่าว่าง)
   const userPicture = profile.pictureUrl || "https://via.placeholder.com/150";
@@ -218,13 +276,42 @@ async function sendComplaint() {
       }
     ]);
 
-    alert("ส่งเรียบร้อย");
-    liff.closeWindow();
+    showModal("Success", "ส่งเรียบร้อย", function() {
+      liff.closeWindow();
+    });
 
   } catch (err) {
     console.error("Error sending message:", err);
-    alert("เกิดข้อผิดพลาดในการส่งข้อความ: " + err.message);
+    showModal("Error", "เกิดข้อผิดพลาด กรุณาลองใหม่: " + err.message);
+    
+    // คืนค่าปุ่มให้กดใหม่ได้หากเกิดข้อผิดพลาด
+    submitBtn.disabled = false;
+    submitBtn.innerText = "ส่งเรื่อง";
   }
+}
+
+// ฟังก์ชันสำหรับเปิด Modal
+function showModal(type, message, callback) {
+  const modal = document.getElementById("customModal");
+  const icon = document.getElementById("modalIcon");
+  const btn = document.getElementById("modalBtn");
+
+  // ตั้งค่าไอคอนตามประเภท (Success หรือ Error)
+  const isError = type.toLowerCase() === "error";
+  icon.innerText = isError ? "✕" : "✓";
+  icon.className = "modal-icon " + (isError ? "Error" : "Success");
+  btn.className = "modal-btn " + (isError ? "Error" : "Success");
+
+  // ใส่ข้อความ
+  document.getElementById("modalMessage").innerText = message;
+
+  // กดตกลงแล้วทำอะไรต่อ (Callback)
+  btn.onclick = function () {
+    modal.style.display = "none";
+    if (typeof callback === "function") callback();
+  };
+
+  modal.style.display = "flex";
 }
 
 // เรียกใช้งาน initLIFF เมื่อ DOM โหลดเสร็จเรียบร้อย
