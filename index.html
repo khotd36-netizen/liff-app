@@ -92,6 +92,13 @@ src="https://via.placeholder.com/50">
 <input 
 id="title"
 placeholder="หัวข้อ">
+<input 
+id="location"
+placeholder="สถานที่">
+<input 
+id="meet-time"
+  type="datetime-local"
+placeholder="วันเวลาที่พบ">
 
 
 <textarea
@@ -197,6 +204,14 @@ const title =
 document.getElementById(
 "title"
 ).value;
+const location =
+document.getElementById(
+"location"
+).value;
+const meetTime =
+document.getElementById(
+"meet-time"
+).value;
 
 
 
@@ -204,6 +219,7 @@ const detail =
 document.getElementById(
 "detail"
 ).value;
+  
 
 
 
@@ -313,9 +329,6 @@ type:"separator",
 margin:"lg"
 
 },
-
-
-
 {
 
 type:"text",
@@ -331,6 +344,39 @@ wrap:true,
 margin:"lg"
 
 },
+  {
+
+type:"text",
+
+text:location,
+
+wrap:true,
+
+margin:"md"
+
+},
+{
+
+type:"text",
+
+text:meetTime,
+
+wrap:true,
+
+margin:"md"
+
+},
+{
+
+type:"text",
+
+text:detail,
+
+wrap:true,
+
+margin:"md"
+
+}
 
 
 
