@@ -3,370 +3,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>ร้องเรียน</title>
 
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
 <style>
-body{
-  font-family:sans-serif;
-  padding:20px;
-  background:#f5f5f5;
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f5f5f5;
 }
 
-.box{
-  background:white;
-  padding:20px;
-  border-radius:15px;
+.box {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
 }
 
-.profile{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  background:#eafff0;
-  padding:10px;
-  border-radius:10px;
-  margin-bottom:15px;
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #eafff0;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
 
-.profile img{
-  width:50px;
-  height:50px;
-  border-radius:50%;
+.profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
-input,textarea,button{
-  width:100%;
-  margin-top:10px;
-  padding:12px;
-  box-sizing:border-box;
+input, textarea, button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  box-sizing: border-box;
 }
 
-button{
-  background:#06c755;
-  color:white;
-  border:0;
-  border-radius:8px;
+button {
+  background: #06c755;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
 }
 </style>
-
 </head>
-
 
 <body>
 
-
 <div class="box">
+  <h2>แจ้งร้องเรียน</h2>
 
+  <div class="profile">
+    <img id="avatar" src="https://via.placeholder.com/50" alt="profile">
+    <div>
+      <div>ผู้แจ้ง</div>
+      <b id="lineName">กำลังโหลด...</b>
+    </div>
+  </div>
 
-<h2>
-แจ้งร้องเรียน
-</h2>
+  <input id="title" placeholder="หัวข้อ">
+  <input id="location" placeholder="สถานที่">
 
+  <div style="margin-top: 10px;">เวลาที่พบปัญหา</div>
+  <input type="datetime-local" id="timemeet">
 
-<div class="profile">
+  <textarea id="detail" rows="5" placeholder="รายละเอียด"></textarea>
 
-<img id="avatar"
-src="https://via.placeholder.com/50">
-
-
-<div>
-
-<div>
-ผู้แจ้ง
+  <button onclick="sendComplaint()">ส่งเรื่อง</button>
 </div>
-
-<b id="lineName">
-กำลังโหลด...
-</b>
-
-</div>
-
-
-</div>
-
-  
-
-
-<input 
-id="title"
-placeholder="หัวข้อ">
-<input 
-id="location"
-placeholder="สถานที่">
-
-<div>
-เวลาที่พบปัญหา
-</div>
-<input 
-type="datetime-local"
-id="timemeet">
-
-
-<textarea
-id="detail"
-rows="5"
-placeholder="รายละเอียด">
-</textarea>
-
-
-
-<button onclick="sendComplaint()">
-ส่งเรื่อง
-</button>
-
-
-</div>
-
-
-
 
 <script>
-
-
-const LIFF_ID =
-"2011006745-pUOxZszu";
-
-
+const LIFF_ID = "2011006745-pUOxZszu"; // เปลี่ยนเป็น LIFF ID ของคุณ
 let profile = null;
 
+async function initLIFF() {
+  try {
+    await liff.init({ liffId: LIFF_ID });
 
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
 
-async function initLIFF(){
+    profile = await liff.getProfile();
+    console.log("Profile:", profile);
 
+    // แสดงชื่อ
+    document.getElementById("lineName").innerText = profile.displayName || "ผู้ใช้งาน LINE";
 
-await liff.init({
+    // แสดงรูปภาพ (ใส่ รูปสำรอง หากผู้ใช้ไม่มีรูปโปรไฟล์)
+    const defaultAvatar = "https://via.placeholder.com/50";
+    document.getElementById("avatar").src = profile.pictureUrl || defaultAvatar;
 
-liffId:LIFF_ID
-
-});
-
-
-
-if(!liff.isLoggedIn()){
-
-liff.login();
-
-return;
-
+  } catch (error) {
+    console.error("LIFF Initialization failed:", error);
+    document.getElementById("lineName").innerText = "โหลดข้อมูลไม่สำเร็จ";
+  }
 }
 
+async function sendComplaint() {
+  if (!profile) {
+    alert("ยังไม่ได้ Login LINE หรือข้อมูลโปรไฟล์ยังโหลดไม่เสร็จ");
+    return;
+  }
 
+  const title = document.getElementById("title").value.trim();
+  const location = document.getElementById("location").value.trim();
+  const timemeet = document.getElementById("timemeet").value;
+  const detail = document.getElementById("detail").value.trim();
 
-profile =
-await liff.getProfile();
+  if (!title || !location || !detail) {
+    alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+    return;
+  }
 
+  // รูปภาพสำหรับ Flex Message (ต้องเป็น https และไม่เป็นค่าว่าง)
+  const userPicture = profile.pictureUrl || "https://via.placeholder.com/150";
 
-
-console.log(profile);
-
-
-
-// แสดงชื่อ
-
-document.getElementById(
-"lineName"
-).innerText =
-profile.displayName;
-
-
-
-// แสดงรูป
-
-if(profile.pictureUrl){
-
-document.getElementById(
-"avatar"
-).src =
-profile.pictureUrl;
-
-}
-
-
-}
-
-
-
-async function sendComplaint(){
-
-
-if(!profile){
-
-alert(
-"ยังไม่ได้ Login LINE"
-);
-
-return;
-
-}
-
-
-
-const title =
-document.getElementById(
-"title"
-).value;
-  
-const location =
-document.getElementById(
-"location"
-).value;
-  
-const timemeet =
-document.getElementById(
-"timemeet"
-).value;
-
-  
-
-
-
-const detail =
-document.getElementById(
-"detail"
-).value;
-
-
-
-
-await liff.sendMessages([
-{
-    type:"text",
-    text:"ส่งเรื่องร้องเรียน"
-  },
-{
-
-type:"flex",
-
-altText:
-"ร้องเรียน",
-
-
-contents:{
-
-
-type:"bubble",
-
-
-
-header:{
-
-type:"box",
-
-layout:"vertical",
-
-contents:[
-
-{
-
-type:"text",
-
-text:"ร้องเรียน",
-
-weight:"bold",
-
-color:"#ffffff"
-
-}
-
-],
-
-backgroundColor:"#06C755"
-
-},
-
-
-
-body:{
-
-type:"box",
-
-layout:"vertical",
-
-contents: [
-          // รูป LINE
-          {
-            type: "image",
-            url: profile.pictureUrl,
-            size: "md",
-            aspectMode: "cover",
-            aspectRatio: "1:1",
-            align: "center"
+  try {
+    await liff.sendMessages([
+      {
+        type: "text",
+        text: "ส่งเรื่องร้องเรียน"
+      },
+      {
+        type: "flex",
+        altText: "ร้องเรียน",
+        contents: {
+          type: "bubble",
+          header: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "text",
+                text: "ร้องเรียน",
+                weight: "bold",
+                color: "#ffffff"
+              }
+            ],
+            backgroundColor: "#06C755"
           },
-          {
-            type: "text",
-            text: profile.displayName,
-            weight: "bold",
-            size: "lg",
-            align: "center",
-            margin: "md"
-          },
-          {
-            type: "separator",
-            margin: "lg"
-          },
-          {
-            type: "text",
-            text: title,
-            weight: "bold",
-            size: "lg",
-            wrap: true,
-            margin: "lg"
-          },
-          {
-            type: "text",
-            text: `สถานที่ : ${location}`,
-            wrap: true,
-            margin: "md"
-          },
-          {
-            type: "text",
-            text: `เวลาที่พบ : ${timemeet}`,
-            wrap: true,
-            margin: "md"
-          },
-          {
-            type: "text",
-            text: `รายละเอียด : ${detail}`,
-            wrap: true,
-            margin: "md"
+          body: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "image",
+                url: userPicture,
+                size: "md",
+                aspectMode: "cover",
+                aspectRatio: "1:1",
+                align: "center"
+              },
+              {
+                type: "text",
+                text: profile.displayName,
+                weight: "bold",
+                size: "lg",
+                align: "center",
+                margin: "md"
+              },
+              {
+                type: "separator",
+                margin: "lg"
+              },
+              {
+                type: "text",
+                text: title,
+                weight: "bold",
+                size: "lg",
+                wrap: true,
+                margin: "lg"
+              },
+              {
+                type: "text",
+                text: `สถานที่ : ${location}`,
+                wrap: true,
+                margin: "md"
+              },
+              {
+                type: "text",
+                text: `เวลาที่พบ : ${timemeet}`,
+                wrap: true,
+                margin: "md"
+              },
+              {
+                type: "text",
+                text: `รายละเอียด : ${detail}`,
+                wrap: true,
+                margin: "md"
+              }
+            ]
           }
-        ]
+        }
+      }
+    ]);
 
+    alert("ส่งเรียบร้อย");
+    liff.closeWindow();
+
+  } catch (err) {
+    console.error("Error sending message:", err);
+    alert("เกิดข้อผิดพลาดในการส่งข้อความ: " + err.message);
+  }
 }
 
-
-}
-
-
-}
-
-]);
-
-
-
-alert(
-"ส่งเรียบร้อย"
-);
-
-
-
-liff.closeWindow();
-
-
-
-}
-
-
-
-initLIFF();
-
-
-
+// เรียกใช้งาน initLIFF เมื่อ DOM โหลดเสร็จเรียบร้อย
+document.addEventListener("DOMContentLoaded", function() {
+  initLIFF();
+});
 </script>
-
 
 </body>
 </html>
