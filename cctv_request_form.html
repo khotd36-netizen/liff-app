@@ -72,39 +72,68 @@
               min-height: 45px;           
               background-color: #ffffff;
             }
-            /* ยกเว้นขนาดสำหรับ Checkbox ไม่ให้ขยายเต็มจอ */
-            .checkbox-group input[type="checkbox"] {
-              width: 20px !important;
-              height: 20px !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              display: inline-block !important;
-              cursor: pointer;
-            }
-
-            /* Checkbox Style */
             .checkbox-group {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-top: 12px;
-                padding: 10px;
-                background: #f9f9f9;
-                border-radius: 8px;
-                border: 1px solid #eee;
+              display: flex;
+              align-items: center;
+              position: relative;
+              margin-top: 12px;
+              padding: 12px;
+              background: #f9f9f9;
+              border-radius: 8px;
+              border: 1px solid #eee;
+              cursor: pointer;
+              -webkit-user-select: none;
+              user-select: none;
             }
-
+            
             .checkbox-group input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-                accent-color: #06c755;
-                cursor: pointer;
+              position: absolute;
+              opacity: 0;
+              cursor: pointer;
+              height: 0;
+              width: 0;
             }
-
+            
+            .checkmark {
+              width: 20px;
+              height: 20px;
+              background-color: #fff;
+              border: 2px solid #ccc;
+              border-radius: 5px;
+              margin-right: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              transition: all 0.2s ease;
+              flex-shrink: 0;
+            }
+            
+            .checkbox-group input[type="checkbox"]:checked ~ .checkmark {
+              background-color: #06c755;
+              border-color: #06c755;
+            }
+            
+            .checkmark:after {
+              content: "";
+              display: none;
+              width: 5px;
+              height: 10px;
+              border: solid white;
+              border-width: 0 2.5px 2.5px 0;
+              transform: rotate(45deg);
+              margin-bottom: 2px;
+            }
+            
+            .checkbox-group input[type="checkbox"]:checked ~ .checkmark:after {
+              display: block;
+            }
+            
             .checkbox-group label {
-                margin-bottom: 0;
-                font-weight: normal;
-                cursor: pointer;
+              margin-bottom: 0;
+              font-size: 14px;
+              cursor: pointer;
+              flex: 1;
+              color: #333;
             }
 
             button {
