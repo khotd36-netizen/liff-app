@@ -1,182 +1,140 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>แจ้งขอดูกล้องวงจรปิด</title>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>แจ้งขอดูกล้องวงจรปิด</title>
 
-        <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 
-        <style>
-            body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+<style>
+body {
+  font-family: sans-serif;
   padding: 20px;
-  background: #f0f2f5;
-  color: #2c3e50;
+  background: #f5f5f5;
+  color: #333;
 }
 
 .box {
-  background: #ffffff;
-  padding: 24px 20px;
-  border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
-  max-width: 480px;
-  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 h2 {
-  margin: 0 0 16px 0;
+  margin-top: 0;
   color: #06c755;
   text-align: center;
-  font-size: 22px;
-  font-weight: 700;
 }
 
 .profile {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: #f4fbf6;
-  border: 1px solid #e1f5e8;
-  padding: 12px 16px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  background: #eafff0;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
 
 .profile img {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #06c755;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-top: 12px;
 }
 
 label {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: bold;
   display: block;
-  margin-bottom: 6px;
-  color: #4a5568;
+  margin-bottom: 4px;
 }
 
-/* 🎨 ตกแต่ง Input, Datetime และ Textarea ใหม่ */
 input[type="text"], 
 input[type="datetime-local"], 
 textarea {
   display: block;             
   width: 100%;
-  padding: 12px 14px;
+  padding: 12px;
   box-sizing: border-box;     
   -webkit-appearance: none;   
-  background-color: #f8fafc;
-  border: 1.5px solid #e2e8f0;     
-  border-radius: 10px;
+  border: 1px solid #ccc;     
+  border-radius: 8px;
   font-family: inherit;
-  font-size: 15px;
-  color: #1a202c;
-  transition: all 0.2s ease-in-out;
-  outline: none;
-}
-
-/* เอฟเฟกต์เมื่อคลิก/โฟกัสที่ช่องกรอกข้อมูล */
-input[type="text"]:focus, 
-input[type="datetime-local"]:focus, 
-textarea:focus {
-  background-color: #ffffff;
-  border-color: #06c755;
-  box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.15);
-}
-
-input::placeholder, textarea::placeholder {
-  color: #a0aec0;
+  font-size: 14px;
 }
 
 input[type="datetime-local"] {
-  min-height: 48px;           
-  cursor: pointer;
+  min-height: 45px;           
+  background-color: #ffffff;
 }
 
-/* 🎨 ตกแต่ง Checkbox ให้ดูเป็น Card น่ากด */
+/* Checkbox Style */
 .checkbox-group {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 12px 14px;
-  background: #f8fafc;
-  border-radius: 10px;
-  border: 1.5px solid #e2e8f0;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.checkbox-group:active {
-  background: #edf2f7;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 1px solid #eee;
 }
 
 .checkbox-group input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   accent-color: #06c755;
   cursor: pointer;
-  border-radius: 4px;
 }
 
 .checkbox-group label {
   margin-bottom: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #2d3748;
+  font-weight: normal;
   cursor: pointer;
-  flex: 1;
 }
 
-/* 🎨 ปุ่มกดสไตล์นุ่มนวลขึ้น */
 button {
   display: block;
   width: 100%;
-  margin-top: 24px;
+  margin-top: 20px;
   padding: 14px;
   background: #06c755;
   color: white;
   border: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(6, 199, 85, 0.25);
-  transition: all 0.2s ease-in-out;
-}
-
-button:active {
-  transform: scale(0.98);
+  transition: background-color 0.2s, opacity 0.2s;
 }
 
 button:disabled {
-  background: #cbd5e0 !important;
-  box-shadow: none;
+  background: #ccc !important;
   cursor: not-allowed;
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 /* Modal Style */
 .modal-overlay {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4); display: none;
+  background: rgba(0,0,0,0.5); display: none;
   justify-content: center; align-items: center; z-index: 99999;
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(2px);
 }
 .modal-card {
-  background: #fff; padding: 24px 20px; border-radius: 20px;
+  background: #fff; padding: 24px 20px; border-radius: 16px;
   text-align: center; width: 85%; max-width: 300px;
-  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 .modal-icon {
-  width: 52px; height: 52px; border-radius: 50%; font-size: 26px;
+  width: 50px; height: 50px; border-radius: 50%; font-size: 26px;
   font-weight: bold; display: flex; align-items: center;
   justify-content: center; margin: 0 auto 12px;
 }
@@ -185,269 +143,273 @@ button:disabled {
 .modal-icon.Error { background: #ffebee; color: #c62828; }
 .modal-btn.Error { background: #d32f2f; }
 
-.modal-message { font-size: 16px; color: #2d3748; margin: 0 0 20px; font-weight: 500; line-height: 1.4; }
+.modal-message { font-size: 16px; color: #333; margin: 0 0 20px; font-weight: 500; }
 .modal-btn {
   width: 100%; padding: 12px; color: #fff; border: none;
   border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
 }
-        </style>
-    </head>
+</style>
+</head>
 
-    <body>
-        <div class="box">
-            <h2>📹 แจ้งขอดูกล้องวงจรปิด</h2>
+<body>
 
-            <div class="profile">
-                <img id="avatar" src="https://via.placeholder.com/50" alt="profile" />
-                <div>
-                    <div style="font-size: 12px; color: #666">ผู้แจ้งเรื่อง</div>
-                    <b id="lineName">กำลังโหลด...</b>
-                </div>
-            </div>
+<div class="box">
+  <h2>📹 แจ้งขอดูกล้องวงจรปิด</h2>
 
-            <div class="form-group">
-                <label for="firstName">ชื่อ</label>
-                <input id="firstName" placeholder="ระบุชื่อ" />
-            </div>
+  <div class="profile">
+    <img id="avatar" src="https://via.placeholder.com/50" alt="profile">
+    <div>
+      <div style="font-size: 12px; color: #666;">ผู้แจ้งเรื่อง</div>
+      <b id="lineName">กำลังโหลด...</b>
+    </div>
+  </div>
 
-            <div class="form-group">
-                <label for="lastName">นามสกุล</label>
-                <input id="lastName" placeholder="ระบูนามสกุล" />
-            </div>
+  <div class="form-group">
+    <label for="firstName">ชื่อ</label>
+    <input id="firstName" placeholder="ระบุชื่อ">
+  </div>
 
-            <div class="form-group">
-                <label for="cause">เหตุที่เกิด</label>
-                <input id="cause" placeholder="เช่น อุบัติเหตุรถชน, ของหาย" />
-            </div>
+  <div class="form-group">
+    <label for="lastName">นามสกุล</label>
+    <input id="lastName" placeholder="ระบูนามสกุล">
+  </div>
 
-            <div class="form-group">
-                <label for="location">จุดเกิดเหตุ</label>
-                <input id="location" placeholder="เช่น หน้าอาคาร A, สี่แยกไฟแดง" />
-            </div>
+  <div class="form-group">
+    <label for="cause">เหตุที่เกิด</label>
+    <input id="cause" placeholder="เช่น อุบัติเหตุรถชน, ของหาย">
+  </div>
 
-            <div class="form-group">
-                <label for="eventTime">ช่วงเวลาที่เกิดเหตุ</label>
-                <input type="datetime-local" id="eventTime" />
-            </div>
+  <div class="form-group">
+    <label for="location">จุดเกิดเหตุ</label>
+    <input id="location" placeholder="เช่น หน้าอาคาร A, สี่แยกไฟแดง">
+  </div>
 
-            <!-- Checkboxes -->
-            <div class="checkbox-group">
-                <input type="checkbox" id="isReported" />
-                <label for="isReported">แจ้งความกับเจ้าหน้าที่ตำรวจแล้ว</label>
-            </div>
+  <div class="form-group">
+    <label for="eventTime">ช่วงเวลาที่เกิดเหตุ</label>
+    <input type="datetime-local" id="eventTime">
+  </div>
 
-            <div class="checkbox-group">
-                <input type="checkbox" id="hasRescue" />
-                <label for="hasRescue">มีรถพยาบาล / กู้ภัย เข้าช่วยเหลือ</label>
-            </div>
+  <!-- Checkboxes -->
+  <div class="checkbox-group">
+    <input type="checkbox" id="isReported">
+    <label for="isReported">แจ้งความกับเจ้าหน้าที่ตำรวจแล้ว</label>
+  </div>
 
-            <div class="form-group">
-                <label for="description" style="margin-top: 12px">คำอธิบายเพิ่มเติม</label>
-                <textarea id="description" rows="4" placeholder="รายละเอียดเพิ่มเติมที่ต้องการแจ้ง..."></textarea>
-            </div>
+  <div class="checkbox-group">
+    <input type="checkbox" id="hasRescue">
+    <label for="hasRescue">มีรถพยาบาล / กู้ภัย เข้าช่วยเหลือ</label>
+  </div>
 
-            <button id="submitBtn" onclick="sendCctvRequest()" disabled>กำลังโหลดข้อมูล...</button>
-        </div>
+  <div class="form-group">
+    <label for="description" style="margin-top: 12px;">คำอธิบายเพิ่มเติม</label>
+    <textarea id="description" rows="4" placeholder="รายละเอียดเพิ่มเติมที่ต้องการแจ้ง..."></textarea>
+  </div>
 
-        <!-- Modal แจ้งเตือน -->
-        <div id="customModal" class="modal-overlay">
-            <div class="modal-card">
-                <div id="modalIcon" class="modal-icon">✓</div>
-                <p id="modalMessage" class="modal-message"></p>
-                <button id="modalBtn" class="modal-btn">ตกลง</button>
-            </div>
-        </div>
+  <button id="submitBtn" onclick="sendCctvRequest()" disabled>กำลังโหลดข้อมูล...</button>
+</div>
 
-        <script>
-            const LIFF_ID = "xxx-xxx"; // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
-            let profile = null;
+<!-- Modal แจ้งเตือน -->
+<div id="customModal" class="modal-overlay">
+  <div class="modal-card">
+    <div id="modalIcon" class="modal-icon">✓</div>
+    <p id="modalMessage" class="modal-message"></p>
+    <button id="modalBtn" class="modal-btn">ตกลง</button>
+  </div>
+</div>
 
-            async function initLIFF() {
-                const submitBtn = document.getElementById("submitBtn");
+<script>
+const LIFF_ID = "xxx-xxx"; // ⚠️ เปลี่ยนเป็น LIFF ID ของคุณ
+let profile = null;
 
-                try {
-                    await liff.init({ liffId: LIFF_ID });
+async function initLIFF() {
+  const submitBtn = document.getElementById("submitBtn");
+  
+  try {
+    await liff.init({ liffId: LIFF_ID });
 
-                    if (!liff.isLoggedIn()) {
-                        liff.login();
-                        return;
-                    }
+    if (!liff.isLoggedIn()) {
+      liff.login();
+      return;
+    }
 
-                    profile = await liff.getProfile();
+    profile = await liff.getProfile();
 
-                    document.getElementById("lineName").innerText = profile.displayName || "ผู้ใช้งาน LINE";
-                    const defaultAvatar = "https://via.placeholder.com/50";
-                    document.getElementById("avatar").src = profile.pictureUrl || defaultAvatar;
+    document.getElementById("lineName").innerText = profile.displayName || "ผู้ใช้งาน LINE";
+    const defaultAvatar = "https://via.placeholder.com/50";
+    document.getElementById("avatar").src = profile.pictureUrl || defaultAvatar;
 
-                    // เปิดให้กดปุ่มบันทึกเมื่อโหลดโปรไฟล์สำเร็จ
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "บันทึกและส่งเรื่อง";
-                } catch (error) {
-                    console.error("LIFF Initialization failed:", error);
-                    document.getElementById("lineName").innerText = "โหลดข้อมูลไม่สำเร็จ";
-                    submitBtn.innerText = "เกิดข้อผิดพลาดในการโหลด";
-                }
-            }
+    // เปิดให้กดปุ่มบันทึกเมื่อโหลดโปรไฟล์สำเร็จ
+    submitBtn.disabled = false;
+    submitBtn.innerText = "บันทึกและส่งเรื่อง";
 
-            async function sendCctvRequest() {
-                const submitBtn = document.getElementById("submitBtn");
+  } catch (error) {
+    console.error("LIFF Initialization failed:", error);
+    document.getElementById("lineName").innerText = "โหลดข้อมูลไม่สำเร็จ";
+    submitBtn.innerText = "เกิดข้อผิดพลาดในการโหลด";
+  }
+}
 
-                if (!profile) {
-                    showModal("Error", "ยังไม่ได้ Login LINE หรือข้อมูลยังโหลดไม่เสร็จ");
-                    return;
-                }
+async function sendCctvRequest() {
+  const submitBtn = document.getElementById("submitBtn");
 
-                // ดึงค่าจากฟอร์ม
-                const firstName = document.getElementById("firstName").value.trim();
-                const lastName = document.getElementById("lastName").value.trim();
-                const cause = document.getElementById("cause").value.trim();
-                const location = document.getElementById("location").value.trim();
-                const eventTime = document.getElementById("eventTime").value;
-                const isReported = document.getElementById("isReported").checked ? "แจ้งความแล้ว" : "ยังไม่ได้แจ้งความ";
-                const hasRescue = document.getElementById("hasRescue").checked ? "มี" : "ไม่มี";
-                const description = document.getElementById("description").value.trim() || "-";
+  if (!profile) {
+    showModal("Error", "ยังไม่ได้ Login LINE หรือข้อมูลยังโหลดไม่เสร็จ");
+    return;
+  }
 
-                // ตรวจสอบข้อมูลจำเป็น
-                if (!firstName || !lastName || !cause || !location || !eventTime) {
-                    showModal("Error", "กรุณากรอกข้อมูลสำคัญให้ครบถ้วน");
-                    return;
-                }
+  // ดึงค่าจากฟอร์ม
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName = document.getElementById("lastName").value.trim();
+  const cause = document.getElementById("cause").value.trim();
+  const location = document.getElementById("location").value.trim();
+  const eventTime = document.getElementById("eventTime").value;
+  const isReported = document.getElementById("isReported").checked ? "แจ้งความแล้ว" : "ยังไม่ได้แจ้งความ";
+  const hasRescue = document.getElementById("hasRescue").checked ? "มี" : "ไม่มี";
+  const description = document.getElementById("description").value.trim() || "-";
 
-                // ป้องกันการกดส่งซ้ำ
-                submitBtn.disabled = true;
-                submitBtn.innerText = "กำลังส่งข้อมูล...";
+  // ตรวจสอบข้อมูลจำเป็น
+  if (!firstName || !lastName || !cause || !location || !eventTime) {
+    showModal("Error", "กรุณากรอกข้อมูลสำคัญให้ครบถ้วน");
+    return;
+  }
 
-                const userPicture = profile.pictureUrl || "https://via.placeholder.com/150";
+  // ป้องกันการกดส่งซ้ำ
+  submitBtn.disabled = true;
+  submitBtn.innerText = "กำลังส่งข้อมูล...";
 
-                try {
-                    await liff.sendMessages([
-                        {
-                            type: "text",
-                            text: "[ระบบ] ส่งเรื่องร้องเรียน",
-                        },
-                        {
-                            type: "flex",
-                            altText: "แจ้งขอดูกล้องวงจรปิด",
-                            contents: {
-                                type: "bubble",
-                                header: {
-                                    type: "box",
-                                    layout: "vertical",
-                                    contents: [
-                                        {
-                                            type: "text",
-                                            text: "📹 แจ้งขอดูกล้องวงจรปิด",
-                                            weight: "bold",
-                                            color: "#ffffff",
-                                            size: "md",
-                                        },
-                                    ],
-                                    backgroundColor: "#06C755",
-                                },
-                                body: {
-                                    type: "box",
-                                    layout: "vertical",
-                                    contents: [
-                                        {
-                                            type: "image",
-                                            url: userPicture,
-                                            size: "md",
-                                            aspectMode: "cover",
-                                            aspectRatio: "1:1",
-                                            align: "center",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `${firstName} ${lastName}`,
-                                            weight: "bold",
-                                            size: "lg",
-                                            align: "center",
-                                            margin: "md",
-                                        },
-                                        {
-                                            type: "separator",
-                                            margin: "lg",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `เหตุที่เกิด : ${cause}`,
-                                            weight: "bold",
-                                            wrap: true,
-                                            margin: "lg",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `จุดเกิดเหตุ : ${location}`,
-                                            wrap: true,
-                                            margin: "sm",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `ช่วงเวลาที่เกิดเหตุ : ${eventTime}`,
-                                            wrap: true,
-                                            margin: "sm",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `การแจ้งความ : ${isReported}`,
-                                            wrap: true,
-                                            margin: "sm",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `กู้ภัย/รถพยาบาล : ${hasRescue}`,
-                                            wrap: true,
-                                            margin: "sm",
-                                        },
-                                        {
-                                            type: "text",
-                                            text: `คำอธิบาย : ${description}`,
-                                            wrap: true,
-                                            margin: "sm",
-                                            color: "#666666",
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    ]);
+  const userPicture = profile.pictureUrl || "https://via.placeholder.com/150";
 
-                    showModal("Success", "ส่งเรื่องเรียบร้อยแล้ว", function () {
-                        liff.closeWindow();
-                    });
-                } catch (err) {
-                    console.error("Error sending message:", err);
-                    showModal("Error", "เกิดข้อผิดพลาด: " + err.message);
+  try {
+    await liff.sendMessages([
+      {
+        type: "text",
+        text: "[ระบบ] ส่งเรื่องร้องเรียน"
+      },
+      {
+        type: "flex",
+        altText: "แจ้งขอดูกล้องวงจรปิด",
+        contents: {
+          type: "bubble",
+          header: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "text",
+                text: "📹 แจ้งขอดูกล้องวงจรปิด",
+                weight: "bold",
+                color: "#ffffff",
+                size: "md"
+              }
+            ],
+            backgroundColor: "#06C755"
+          },
+          body: {
+            type: "box",
+            layout: "vertical",
+            contents: [
+              {
+                type: "image",
+                url: userPicture,
+                size: "md",
+                aspectMode: "cover",
+                aspectRatio: "1:1",
+                align: "center"
+              },
+              {
+                type: "text",
+                text: `${firstName} ${lastName}`,
+                weight: "bold",
+                size: "lg",
+                align: "center",
+                margin: "md"
+              },
+              {
+                type: "separator",
+                margin: "lg"
+              },
+              {
+                type: "text",
+                text: `เหตุที่เกิด : ${cause}`,
+                weight: "bold",
+                wrap: true,
+                margin: "lg"
+              },
+              {
+                type: "text",
+                text: `จุดเกิดเหตุ : ${location}`,
+                wrap: true,
+                margin: "sm"
+              },
+              {
+                type: "text",
+                text: `ช่วงเวลาที่เกิดเหตุ : ${eventTime}`,
+                wrap: true,
+                margin: "sm"
+              },
+              {
+                type: "text",
+                text: `การแจ้งความ : ${isReported}`,
+                wrap: true,
+                margin: "sm"
+              },
+              {
+                type: "text",
+                text: `กู้ภัย/รถพยาบาล : ${hasRescue}`,
+                wrap: true,
+                margin: "sm"
+              },
+              {
+                type: "text",
+                text: `คำอธิบาย : ${description}`,
+                wrap: true,
+                margin: "sm",
+                color: "#666666"
+              }
+            ]
+          }
+        }
+      }
+    ]);
 
-                    // ปลดล็อกปุ่มให้กดใหม่ได้หากเกิด Error
-                    submitBtn.disabled = false;
-                    submitBtn.innerText = "บันทึกและส่งเรื่อง";
-                }
-            }
+    showModal("Success", "ส่งเรื่องเรียบร้อยแล้ว", function() {
+      liff.closeWindow();
+    });
 
-            function showModal(type, message, callback) {
-                const modal = document.getElementById("customModal");
-                const icon = document.getElementById("modalIcon");
-                const btn = document.getElementById("modalBtn");
+  } catch (err) {
+    console.error("Error sending message:", err);
+    showModal("Error", "เกิดข้อผิดพลาด: " + err.message);
+    
+    // ปลดล็อกปุ่มให้กดใหม่ได้หากเกิด Error
+    submitBtn.disabled = false;
+    submitBtn.innerText = "บันทึกและส่งเรื่อง";
+  }
+}
 
-                const isError = type.toLowerCase() === "error";
-                icon.innerText = isError ? "✕" : "✓";
-                icon.className = "modal-icon " + (isError ? "Error" : "Success");
-                btn.className = "modal-btn " + (isError ? "Error" : "Success");
+function showModal(type, message, callback) {
+  const modal = document.getElementById("customModal");
+  const icon = document.getElementById("modalIcon");
+  const btn = document.getElementById("modalBtn");
 
-                document.getElementById("modalMessage").innerText = message;
+  const isError = type.toLowerCase() === "error";
+  icon.innerText = isError ? "✕" : "✓";
+  icon.className = "modal-icon " + (isError ? "Error" : "Success");
+  btn.className = "modal-btn " + (isError ? "Error" : "Success");
 
-                btn.onclick = function () {
-                    modal.style.display = "none";
-                    if (typeof callback === "function") callback();
-                };
+  document.getElementById("modalMessage").innerText = message;
 
-                modal.style.display = "flex";
-            }
+  btn.onclick = function () {
+    modal.style.display = "none";
+    if (typeof callback === "function") callback();
+  };
 
-            document.addEventListener("DOMContentLoaded", function () {
-                initLIFF();
-            });
-        </script>
-    </body>
+  modal.style.display = "flex";
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  initLIFF();
+});
+</script>
+
+</body>
 </html>
