@@ -370,7 +370,8 @@
                 const cause = document.getElementById("cause").value.trim();
                 const location = document.getElementById("location").value.trim();
                 const eventTime = document.getElementById("eventTime").value;
-                const isReportedChecked = document.getElementById("isReported").checked;
+                const isReportedCheckedShow = document.getElementById("isReported").checked;
+                const isReportedChecked = document.getElementById("isReported").checked ? "แจ้ง" : "ยังไม่แจ้ง";
                 const hasRescue = document.getElementById("hasRescue").checked ? "มี" : "ไม่มี";
                 const description = document.getElementById("description").value.trim() || "-";
 
@@ -395,7 +396,7 @@
                     showModal("Error", "กรุณาระบุช่วงเวลาที่เกิดเหตุ");
                     return;
                 }
-                if (!isReportedChecked) {
+                if (!isReportedCheckedShow) {
                     showModal("Error", "จำเป็นต้องแจ้งความกับเจ้าหน้าที่ตำรวจก่อนส่งคำร้อง");
                     return;
                 }
@@ -475,7 +476,7 @@
                                         },
                                         {
                                             type: "text",
-                                            text: `การแจ้งความ : แจ้งความแล้ว`,
+                                            text: `การแจ้งความ : ${isReportedChecked}`,
                                             wrap: true,
                                             margin: "sm",
                                         },
