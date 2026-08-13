@@ -55,26 +55,48 @@
                 display: block;
                 margin-bottom: 4px;
             }
-
-            input[type="text"],
-            input[type="datetime-local"],
+            input, 
+            input[type="text"], 
+            input[type="datetime-local"], 
             textarea {
-                display: block;
-                width: 100%;
-                padding: 12px;
-                box-sizing: border-box;
-                -webkit-appearance: none !important;
-                -moz-appearance: none !important;
-                appearance: none !important;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                font-family: inherit;
-                font-size: 14px;
+              display: block !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              box-sizing: border-box !important; /* ป้องกันไม่ให้ขนาดล้นขอบ */
+              
+              padding: 12px 14px !important;
+              margin-top: 4px !important;
+              background-color: #f8fafc !important;
+              border: 1.5px solid #e2e8f0 !important;
+              border-radius: 10px !important;
+              
+              font-family: inherit !important;
+              font-size: 15px !important;
+              color: #1a202c !important;
+              outline: none !important;
+              
+              -webkit-appearance: none !important;
+              -moz-appearance: none !important;
+              appearance: none !important;
+              transition: all 0.2s ease-in-out !important;
             }
-            input[type="text"],
-            input[type="datetime-local"] {
-                min-height: 45px;
-                background-color: #ffffff;
+            
+            /* เอฟเฟกต์ตอนกดพิมพ์ */
+            input:focus, 
+            textarea:focus {
+              background-color: #ffffff !important;
+              border-color: #06c755 !important;
+              box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.15) !important;
+            }
+            
+            /* ยกเว้นขนาดสำหรับ Checkbox ไม่ให้ขยายเต็มจอ */
+            .checkbox-group input[type="checkbox"] {
+              width: 20px !important;
+              height: 20px !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              display: inline-block !important;
+              cursor: pointer;
             }
 
             /* Checkbox Style */
