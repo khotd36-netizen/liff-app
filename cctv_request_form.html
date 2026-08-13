@@ -64,7 +64,16 @@
                 margin-bottom: 4px;
             }
 
-            /* 🎯 แก้ให้ครอบคลุม input ทุกตัวยกเว้น checkbox */
+            .required-asterisk {
+                color: #d32f2f;
+            }
+
+            .optional-text {
+                font-size: 12px;
+                color: #888;
+                font-weight: normal;
+            }
+
             input:not([type="checkbox"]),
             textarea {
                 display: block !important;
@@ -85,7 +94,7 @@
                 min-height: 45px;
             }
 
-            /* 🎯 สไตล์ Custom Checkbox */
+            /* Custom Checkbox Style */
             .checkbox-group {
                 display: flex;
                 align-items: center;
@@ -148,7 +157,15 @@
                 flex: 1;
             }
 
-            /* 🎯 ปุ่มกด */
+            .notice-text {
+                font-size: 12px;
+                color: #d32f2f;
+                margin-top: 4px;
+                margin-left: 2px;
+                display: block;
+            }
+
+            /* Button Style */
             button#submitBtn {
                 display: block;
                 width: 100%;
@@ -250,46 +267,51 @@
                 </div>
             </div>
 
+            <!-- ช่องบังคับกรอก (Required) -->
             <div class="form-group">
-                <label for="firstName">ชื่อ</label>
+                <label for="firstName">ชื่อ <span class="required-asterisk">*</span></label>
                 <input type="text" id="firstName" placeholder="ระบุชื่อ" />
             </div>
 
             <div class="form-group">
-                <label for="lastName">นามสกุล</label>
+                <label for="lastName">นามสกุล <span class="required-asterisk">*</span></label>
                 <input type="text" id="lastName" placeholder="ระบูนามสกุล" />
             </div>
 
             <div class="form-group">
-                <label for="cause">เหตุที่เกิด</label>
+                <label for="cause">เหตุที่เกิด <span class="required-asterisk">*</span></label>
                 <input type="text" id="cause" placeholder="เช่น อุบัติเหตุรถชน, ของหาย" />
             </div>
 
             <div class="form-group">
-                <label for="location">จุดเกิดเหตุ</label>
+                <label for="location">จุดเกิดเหตุ <span class="required-asterisk">*</span></label>
                 <input type="text" id="location" placeholder="เช่น หน้าอาคาร A, สี่แยกไฟแดง" />
             </div>
 
             <div class="form-group">
-                <label for="eventTime">ช่วงเวลาที่เกิดเหตุ</label>
+                <label for="eventTime">ช่วงเวลาที่เกิดเหตุ <span class="required-asterisk">*</span></label>
                 <input type="datetime-local" id="eventTime" />
             </div>
 
-            <!-- Checkboxes แบบ Custom -->
-            <label class="checkbox-group">
-                <input type="checkbox" id="isReported" />
-                <span class="checkmark"></span>
-                <span class="checkbox-label">แจ้งความกับเจ้าหน้าที่ตำรวจแล้ว</span>
-            </label>
+            <!-- บังคับต้องแจ้งความก่อน -->
+            <div class="form-group">
+                <label class="checkbox-group" style="margin-top: 16px;">
+                    <input type="checkbox" id="isReported" />
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label">แจ้งความกับเจ้าหน้าที่ตำรวจแล้ว <span class="required-asterisk">*</span></span>
+                </label>
+                <span class="notice-text">***จำเป็นต้องแจ้งความกับเจ้าหน้าที่ตำรวจก่อนส่งคำร้อง</span>
+            </div>
 
-            <label class="checkbox-group">
+            <!-- ช่องไม่บังคับ (Optional) -->
+            <label class="checkbox-group" style="margin-top: 16px;">
                 <input type="checkbox" id="hasRescue" />
                 <span class="checkmark"></span>
-                <span class="checkbox-label">มีรถพยาบาล / กู้ภัย เข้าช่วยเหลือ</span>
+                <span class="checkbox-label">มีรถพยาบาล / กู้ภัย เข้าช่วยเหลือ <span class="optional-text">(ไม่จำเป็น)</span></span>
             </label>
 
             <div class="form-group">
-                <label for="description" style="margin-top: 12px">คำอธิบายเพิ่มเติม</label>
+                <label for="description" style="margin-top: 12px">คำอธิบายเพิ่มเติม <span class="optional-text">(ไม่จำเป็น)</span></label>
                 <textarea id="description" rows="4" placeholder="รายละเอียดเพิ่มเติมที่ต้องการแจ้ง..."></textarea>
             </div>
 
@@ -348,12 +370,33 @@
                 const cause = document.getElementById("cause").value.trim();
                 const location = document.getElementById("location").value.trim();
                 const eventTime = document.getElementById("eventTime").value;
-                const isReported = document.getElementById("isReported").checked ? "แจ้งความแล้ว" : "ยังไม่ได้แจ้งความ";
+                const isReportedChecked = document.getElementById("isReported").checked;
                 const hasRescue = document.getElementById("hasRescue").checked ? "มี" : "ไม่มี";
                 const description = document.getElementById("description").value.trim() || "-";
 
-                if (!firstName || !lastName || !cause || !location || !eventTime) {
-                    showModal("Error", "กรุณากรอกข้อมูลสำคัญให้ครบถ้วน");
+                // Validation บังคับช่องตั้งแต่นามสกุลจนถึงแจ้งความ
+                if (!firstName) {
+                    showModal("Error", "กรุณาระบุชื่อ");
+                    return;
+                }
+                if (!lastName) {
+                    showModal("Error", "กรุณาระบูนามสกุล");
+                    return;
+                }
+                if (!cause) {
+                    showModal("Error", "กรุณาระบุเหตุที่เกิด");
+                    return;
+                }
+                if (!location) {
+                    showModal("Error", "กรุณาระบุจุดเกิดเหตุ");
+                    return;
+                }
+                if (!eventTime) {
+                    showModal("Error", "กรุณาระบุช่วงเวลาที่เกิดเหตุ");
+                    return;
+                }
+                if (!isReportedChecked) {
+                    showModal("Error", "จำเป็นต้องแจ้งความกับเจ้าหน้าที่ตำรวจก่อนส่งคำร้อง");
                     return;
                 }
 
@@ -432,7 +475,7 @@
                                         },
                                         {
                                             type: "text",
-                                            text: `การแจ้งความ : ${isReported}`,
+                                            text: `การแจ้งความ : แจ้งความแล้ว`,
                                             wrap: true,
                                             margin: "sm",
                                         },
