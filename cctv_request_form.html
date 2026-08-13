@@ -9,185 +9,187 @@
 
         <style>
             body {
-                font-family: sans-serif;
-                padding: 20px;
-                background: #f5f5f5;
-                color: #333;
-            }
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  padding: 20px;
+  background: #f0f2f5;
+  color: #2c3e50;
+}
 
-            .box {
-                background: white;
-                padding: 20px;
-                border-radius: 15px;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-            }
+.box {
+  background: #ffffff;
+  padding: 24px 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  max-width: 480px;
+  margin: 0 auto;
+}
 
-            h2 {
-                margin-top: 0;
-                color: #06c755;
-                text-align: center;
-            }
+h2 {
+  margin: 0 0 16px 0;
+  color: #06c755;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+}
 
-            .profile {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                background: #eafff0;
-                padding: 10px;
-                border-radius: 10px;
-                margin-bottom: 15px;
-            }
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f4fbf6;
+  border: 1px solid #e1f5e8;
+  padding: 12px 16px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
 
-            .profile img {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                object-fit: cover;
-            }
+.profile img {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #06c755;
+}
 
-            .form-group {
-                margin-top: 12px;
-            }
+.form-group {
+  margin-bottom: 16px;
+}
 
-            label {
-                font-size: 14px;
-                font-weight: bold;
-                display: block;
-                margin-bottom: 4px;
-            }
+label {
+  font-size: 13px;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 6px;
+  color: #4a5568;
+}
 
-            input[type="text"],
-            input[type="datetime-local"],
-            textarea {
-                display: block;
-                width: 100%;
-                padding: 12px;
-                box-sizing: border-box;
-                -webkit-appearance: none;
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                font-family: inherit;
-                font-size: 14px;
-            }
+/* 🎨 ตกแต่ง Input, Datetime และ Textarea ใหม่ */
+input[type="text"], 
+input[type="datetime-local"], 
+textarea {
+  display: block;             
+  width: 100%;
+  padding: 12px 14px;
+  box-sizing: border-box;     
+  -webkit-appearance: none;   
+  background-color: #f8fafc;
+  border: 1.5px solid #e2e8f0;     
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 15px;
+  color: #1a202c;
+  transition: all 0.2s ease-in-out;
+  outline: none;
+}
 
-            input[type="datetime-local"] {
-                min-height: 45px;
-                background-color: #ffffff;
-            }
+/* เอฟเฟกต์เมื่อคลิก/โฟกัสที่ช่องกรอกข้อมูล */
+input[type="text"]:focus, 
+input[type="datetime-local"]:focus, 
+textarea:focus {
+  background-color: #ffffff;
+  border-color: #06c755;
+  box-shadow: 0 0 0 3px rgba(6, 199, 85, 0.15);
+}
 
-            /* Checkbox Style */
-            .checkbox-group {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-top: 12px;
-                padding: 10px;
-                background: #f9f9f9;
-                border-radius: 8px;
-                border: 1px solid #eee;
-            }
+input::placeholder, textarea::placeholder {
+  color: #a0aec0;
+}
 
-            .checkbox-group input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-                accent-color: #06c755;
-                cursor: pointer;
-            }
+input[type="datetime-local"] {
+  min-height: 48px;           
+  cursor: pointer;
+}
 
-            .checkbox-group label {
-                margin-bottom: 0;
-                font-weight: normal;
-                cursor: pointer;
-            }
+/* 🎨 ตกแต่ง Checkbox ให้ดูเป็น Card น่ากด */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.2s;
+}
 
-            button {
-                display: block;
-                width: 100%;
-                margin-top: 20px;
-                padding: 14px;
-                background: #06c755;
-                color: white;
-                border: 0;
-                border-radius: 8px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                transition:
-                    background-color 0.2s,
-                    opacity 0.2s;
-            }
+.checkbox-group:active {
+  background: #edf2f7;
+}
 
-            button:disabled {
-                background: #ccc !important;
-                cursor: not-allowed;
-                opacity: 0.7;
-            }
+.checkbox-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #06c755;
+  cursor: pointer;
+  border-radius: 4px;
+}
 
-            /* Modal Style */
-            .modal-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.5);
-                display: none;
-                justify-content: center;
-                align-items: center;
-                z-index: 99999;
-                backdrop-filter: blur(2px);
-            }
-            .modal-card {
-                background: #fff;
-                padding: 24px 20px;
-                border-radius: 16px;
-                text-align: center;
-                width: 85%;
-                max-width: 300px;
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            }
-            .modal-icon {
-                width: 50px;
-                height: 50px;
-                border-radius: 50%;
-                font-size: 26px;
-                font-weight: bold;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin: 0 auto 12px;
-            }
-            .modal-icon.Success {
-                background: #e8f5e9;
-                color: #2e7d32;
-            }
-            .modal-btn.Success {
-                background: #06c755;
-            }
-            .modal-icon.Error {
-                background: #ffebee;
-                color: #c62828;
-            }
-            .modal-btn.Error {
-                background: #d32f2f;
-            }
+.checkbox-group label {
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2d3748;
+  cursor: pointer;
+  flex: 1;
+}
 
-            .modal-message {
-                font-size: 16px;
-                color: #333;
-                margin: 0 0 20px;
-                font-weight: 500;
-            }
-            .modal-btn {
-                width: 100%;
-                padding: 12px;
-                color: #fff;
-                border: none;
-                border-radius: 10px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-            }
+/* 🎨 ปุ่มกดสไตล์นุ่มนวลขึ้น */
+button {
+  display: block;
+  width: 100%;
+  margin-top: 24px;
+  padding: 14px;
+  background: #06c755;
+  color: white;
+  border: 0;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(6, 199, 85, 0.25);
+  transition: all 0.2s ease-in-out;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  background: #cbd5e0 !important;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Modal Style */
+.modal-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4); display: none;
+  justify-content: center; align-items: center; z-index: 99999;
+  backdrop-filter: blur(4px);
+}
+.modal-card {
+  background: #fff; padding: 24px 20px; border-radius: 20px;
+  text-align: center; width: 85%; max-width: 300px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+}
+.modal-icon {
+  width: 52px; height: 52px; border-radius: 50%; font-size: 26px;
+  font-weight: bold; display: flex; align-items: center;
+  justify-content: center; margin: 0 auto 12px;
+}
+.modal-icon.Success { background: #e8f5e9; color: #2e7d32; }
+.modal-btn.Success { background: #06c755; }
+.modal-icon.Error { background: #ffebee; color: #c62828; }
+.modal-btn.Error { background: #d32f2f; }
+
+.modal-message { font-size: 16px; color: #2d3748; margin: 0 0 20px; font-weight: 500; line-height: 1.4; }
+.modal-btn {
+  width: 100%; padding: 12px; color: #fff; border: none;
+  border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer;
+}
         </style>
     </head>
 
